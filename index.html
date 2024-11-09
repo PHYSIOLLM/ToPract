@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>anemia Practice Test </title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { 
+            font-family: Arial; 
+            max-width: 100%;
+            margin: 0;
+            padding: 10px;
+            background-color: #f5f5f5;
+        }
+        
+        .quiz-container {
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .note {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+
+        .student-info {
+            margin-bottom: 20px;
+        }
+
+        .student-info input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .question { 
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+        }
+
+        .question-text {
+            font-size: 1.2em;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .option {
+            margin: 12px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .option:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .option.selected {
+            background: #d4edda;
+            border-color: #28a745;
+        }
+
+        .option input[type="radio"] {
+            display: none;
+        }
+
+        .option label {
+            display: block;
+            width: 100%;
+            margin: 0;
+            padding: 0;
+            cursor: pointer;
+            font-size: 1.1em;
+        }
+	.option {
+    	-webkit-tap-highlight-color: transparent;
+	}
+
+	.option label {
+   		 user-select: none;
+    	-webkit-user-select: none;
+    	-moz-user-select: none;
+   	 -ms-user-select: none;
+	}
+
+
+        .confidence { 
+            margin-top: 20px; 
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+
+        .selected-confidence {
+            display: inline-block;
+            margin-left: 10px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .confidence-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .confidence-button {
+            flex: 1;
+            min-width: 70px;
+            padding: 12px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .confidence-button:hover {
+            background: #e9ecef;
+            transform: translateY(-2px);
+        }
+
+        .confidence-button.selected {
+            background: #cce5ff;
+            border-color: #0056b3;
+            color: #004085;
+        }
+
+        .confidence-button input[type="radio"] {
+            display: none;
+        }
+
+        button { 
+            background: #4CAF50; 
+            color: white; 
+            padding: 15px 25px; 
+            border: none; 
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover { 
+            background: #45a049; 
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 5px;
+            }
+            
+            .quiz-container {
+                padding: 10px;
+            }
+            
+            .question {
+                padding: 15px;
+            }
+            
+            .option {
+                padding: 15px 12px;
+            }
+            
+            .option label {
+                font-size: 1em;
+            }
+            
+            .confidence-button {
+                padding: 10px;
+                font-size: 0.9em;
+            }
+            
+            .question-text {
+                font-size: 1.1em;
+            }
+            
+            h1 {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <h1><b>Anemia Quiz</b></h1>
+        <div class="note">
+            <strong>Marking Scheme:</strong><br>
+            • Correct answer: +4 × Confidence Level Percentage<br>
+            • Wrong answer: -4 × Confidence Level Percentage<br>
+            • No answer or no confidence selected: 0 marks
+        </div>
+
+        <form id="quizForm">
+            <div class="student-info">
+                <label><strong>Serial Number:</strong><br>
+                <input type="text" name="serialNumber" required placeholder="Enter your assigned serial number"></label>
+            </div>
+            <div id="questionContainer">
+                <!-- Questions will be generated here -->
+            </div>
+            <button type="submit">Submit Quiz</button>
+        </form>
+        <div id="result"></div>
+    </div>
+
+<script>
+        // Function to shuffle array
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    // Function to get original question index
+    function getOriginalQuestionIndex(questionText) {
+        return quizQuestions.findIndex(q => q.question === questionText) + 1;
+    }
+    // Quiz questions array
+    const quizQuestions = [
+        {
+            question: "Which type of anemia is typically characterized by macrocytic red blood cells?",
+            options: [
+                "Iron-deficiency anemia",
+                "Aplastic anemia",
+                "Megaloblastic anemia",
+                "Hemolytic anemia"
+            ],
+            correctAnswer: "Megaloblastic anemia"
+        },
+        {
+            question: "Which parameter is essential for calculating Mean Corpuscular Hemoglobin (MCH)?",
+            options: [
+                "Hematocrit and red blood cell count",
+                "Hemoglobin concentration and red blood cell count",
+                "Hemoglobin concentration and hematocrit",
+                "Red blood cell distribution width and platelet count"
+            ],
+            correctAnswer: "Hemoglobin concentration and red blood cell count"
+        },
+        {
+            question: "Which of the following is a classic symptom of anemia?",
+            options: [
+                "Hypertension",
+                "Fatigue",
+                "Jaundice",
+                "Edema"
+            ],
+            correctAnswer: "Fatigue"
+        },
+        {
+            question: "How does Vitamin B12 deficiency affect red blood cell morphology and why?",
+            options: [
+                "It causes microcytosis due to impaired hemoglobin production",
+                "It results in macrocytosis due to disrupted DNA synthesis in red blood cell precursors",
+                "It leads to hyperchromic red blood cells due to iron depletion",
+                "It results in macrocytosis due to bone marrow suppression"
+            ],
+            correctAnswer: "It results in macrocytosis due to disrupted DNA synthesis in red blood cell precursors"
+        },
+         {
+        question: "In cases of chronic blood loss, which type of anemia is most likely to develop and why?",
+        options: [
+            "Macrocytic anemia due to increased red blood cell destruction",
+            "Microcytic anemia due to iron depletion over time",
+            "Normocytic anemia due to sudden drop in red blood cells",
+            "Aplastic anemia due to bone marrow suppression"
+        ],
+        correctAnswer: "Microcytic anemia due to iron depletion over time"
+    },
+    {
+        question: "In which condition would you expect elevated levels of unconjugated bilirubin?",
+        options: [
+            "Iron-deficiency anemia",
+            "Aplastic anemia",
+            "Hemolytic anemia",
+            "Megaloblastic anemia"
+        ],
+        correctAnswer: "Hemolytic anemia"
+    },
+    {
+        question: "A 50-year-old patient presents with anemia characterized by low hemoglobin and normal MCV but elevated reticulocyte count. Which type of anemia might this suggest?",
+        options: [
+            "Iron deficiency anemia",
+            "Hemolytic anemia",
+            "Megaloblastic anemia",
+            "Thalassemia"
+        ],
+        correctAnswer: "Hemolytic anemia"
+    },
+    {
+        question: "You are analyzing lab results that show a low MCV, low MCH, and low ferritin levels. Which is the most likely diagnosis?",
+        options: [
+            "Thalassemia minor",
+            "Vitamin B12 deficiency",
+            "Iron deficiency anemia",
+            "Aplastic anemia"
+        ],
+        correctAnswer: "Iron deficiency anemia"
+    },
+    {
+        question: "Given a patient with low hemoglobin and normal MCV, what type of anemia classification would apply?",
+        options: [
+            "Microcytic anemia",
+            "Macrocytic anemia",
+            "Normocytic anemia",
+            "Hyperchromic anemia"
+        ],
+        correctAnswer: "Normocytic anemia"
+    },
+    {
+        question: "A 55-year-old patient with history of smoking for 30 years has a normal hemoglobin but presents with elevated hematocrit and erythropoietin levels. Which diagnosis is likely, and what might this indicate?",
+        options: [
+            "Secondary polycythemia, due to chronic lung disease",
+            "Primary polycythemia, caused by bone marrow overproduction",
+            "Anemia, resulting from acute blood loss",
+            "Aplastic anemia, due to low red blood cell production"
+        ],
+        correctAnswer: "Secondary polycythemia, due to chronic lung disease"
+    },
+    {
+        question: "Which feature distinguishes primary polycythemia from secondary polycythemia?",
+        options: [
+            "Higher MCV in primary polycythemia",
+            "Low serum erythropoietin levels in primary polycythemia",
+            "Decreased oxygen levels in primary polycythemia",
+            "Increased red blood cell production in red bone marrow"
+        ],
+        correctAnswer: "Low serum erythropoietin levels in primary polycythemia"
+    },
+    {
+        question: "In distinguishing anemia types, why would a high reticulocyte count be significant in identifying hemolytic anemia?",
+        options: [
+            "It shows that the bone marrow is producing red blood cells at a normal rate",
+            "It indicates that red blood cells are being destroyed faster than produced, triggering compensation",
+            "It confirms the presence of vitamin deficiency anemia",
+            "It points to a low iron availability affecting new red blood cell production"
+        ],
+        correctAnswer: "It indicates that red blood cells are being destroyed faster than produced, triggering compensation"
+    },
+    {
+        question: "A patient with polycythemia presents with low oxygen saturation and elevated erythropoietin levels. Which of the below tests would be most relevant to determine the cause?",
+        options: [
+            "Complete blood count",
+            "Arterial blood gas analysis",
+            "Bone marrow biopsy",
+            "Serum iron and ferritin levels"
+        ],
+        correctAnswer: "Arterial blood gas analysis"
+    },
+    {
+        question: "Which of the following is the most effective method to differentiate between iron deficiency anemia and anemia of chronic disease?",
+        options: [
+            "Measuring serum ferritin levels",
+            "Measuring serum iron",
+            "Performing a bone marrow biopsy",
+            "Measuring iron saturation"
+        ],
+        correctAnswer: "Measuring serum ferritin levels"
+    },
+    {
+        question: "Considering treatment options, which approach would be least effective in managing iron deficiency anemia?",
+        options: [
+            "Oral iron supplements",
+            "Blood transfusions",
+            "Erythropoietin injections",
+            "Increased dietary intake of iron"
+        ],
+        correctAnswer: "Erythropoietin injections"
+    }
+    ];
+
+   // Function to generate quiz
+    function generateQuiz() {
+        const shuffledQuestions = shuffleArray([...quizQuestions]);
+        let quizHTML = '';
+
+        shuffledQuestions.forEach((q, index) => {
+            const shuffledOptions = shuffleArray([...q.options]);
+            const questionId = `q${index + 1}`;
+            
+            window[`correctAnswer${index + 1}`] = q.correctAnswer;
+            
+            quizHTML += `
+                <div class="question">
+                    <p><strong>${index + 1}. ${q.question}</strong></p>
+                    ${shuffledOptions.map(option => `
+    <div class="option" onclick="selectOption(this, '${questionId}')" style="user-select: none;">
+        <input type="radio" name="${questionId}" value="${option}">
+        <label>${option}</label>
+    </div>
+                    `).join('')}
+                    <div class="confidence">
+                        <p>Confidence Level: <span class="selected-confidence">No confidence selected (0%)</span></p>
+                        <div class="confidence-options">
+                            ${[25, 50, 75, 100].map(value => `
+                                <div class="confidence-button" data-value="${value/100}">
+                                    <input type="radio" name="c${index + 1}" value="${value/100}">
+                                    ${value}%
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+
+        document.getElementById('questionContainer').innerHTML = quizHTML;
+
+        // Add click handlers for confidence buttons
+        document.querySelectorAll('.confidence-button').forEach(button => {
+            button.addEventListener('click', function() {
+                const confidenceGroup = this.closest('.confidence');
+                const radio = this.querySelector('input[type="radio"]');
+                const confidenceDisplay = confidenceGroup.querySelector('.selected-confidence');
+                
+                if (this.classList.contains('selected')) {
+                    // Deselect if already selected
+                    this.classList.remove('selected');
+                    radio.checked = false;
+                    confidenceDisplay.textContent = 'No confidence selected (0%)';
+                } else {
+                    // Clear other selections and select this one
+                    confidenceGroup.querySelectorAll('.confidence-button').forEach(btn => {
+                        btn.classList.remove('selected');
+                        btn.querySelector('input[type="radio"]').checked = false;
+                    });
+                    this.classList.add('selected');
+                    radio.checked = true;
+                    confidenceDisplay.textContent = `${radio.value * 100}% confidence selected`;
+                }
+            });
+        });
+    }
+
+    // Function to handle option selection
+   function selectOption(element, questionId) {
+    const questionDiv = element.closest('.question');
+    const radio = element.querySelector('input[type="radio"]');
+    
+    // If clicking on already selected option, unselect it
+    if (element.classList.contains('selected')) {
+        element.classList.remove('selected');
+        radio.checked = false;
+    } else {
+        // Clear other selections and select this one
+        questionDiv.querySelectorAll('.option').forEach(opt => {
+            opt.classList.remove('selected');
+            opt.querySelector('input[type="radio"]').checked = false;
+        });
+        element.classList.add('selected');
+        radio.checked = true;
+    }
+}
+
+    // Submit handler
+    document.getElementById('quizForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // Check if serial number is provided
+        const serialNumber = document.querySelector('input[name="serialNumber"]').value;
+        if (!serialNumber.trim()) {
+            alert('Please enter your Serial Number');
+            return;
+        }
+        
+        let totalScore = 0;
+        let responseData = {
+            serialNumber: serialNumber,
+            responses: new Array(quizQuestions.length).fill(null),
+            totalScore: 0
+        };
+        
+        // Process each question
+        for(let i = 1; i <= quizQuestions.length; i++) {
+            const questionId = `q${i}`;
+            const questionElement = document.querySelector(`input[name="${questionId}"]`).closest('.question');
+            const questionText = questionElement.querySelector('strong').textContent.replace(`${i}. `, '');
+            const originalIndex = getOriginalQuestionIndex(questionText);
+            
+            const selectedRadio = document.querySelector(`input[name="${questionId}"]:checked`);
+            const confidenceInput = document.querySelector(`input[name="c${i}"]:checked`);
+            
+            // Handle unanswered questions
+            if (!selectedRadio) {
+                responseData.responses[originalIndex - 1] = {
+                    questionNumber: originalIndex,
+                    selectedAnswer: "Not answered",
+                    correctAnswer: window[`correctAnswer${i}`],
+                    confidence: 0,
+                    marks: 0
+                };
+                continue;
+            }
+            
+            const selectedAnswer = selectedRadio.value;
+            const confidence = confidenceInput ? parseFloat(confidenceInput.value) : 0;
+            const correctAnswer = window[`correctAnswer${i}`];
+            const isCorrect = selectedAnswer === correctAnswer;
+            
+            let marks = 0;
+            if (confidence > 0) {
+                marks = isCorrect ? (4 * confidence) : (-4 * confidence);
+            }
+            
+            totalScore += marks;
+            
+            responseData.responses[originalIndex - 1] = {
+                questionNumber: originalIndex,
+                selectedAnswer: selectedAnswer,
+                correctAnswer: correctAnswer,
+                confidence: confidence * 100,
+                marks: marks
+            };
+        }
+        
+        responseData.totalScore = totalScore;
+
+   // Send to Google Sheets
+try {
+    const response = await fetch('https://script.google.com/macros/s/AKfycbyL8qFu4PlP8Ro4rTJuCERmL4Nawhn-NUcWfMqyWbyYQw1cqSOX-8xhvg3UV60Ehbyc/exec', {
+        method: 'POST',
+        mode: 'no-cors',
+        cache: 'no-cache',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            serialNumber: responseData.serialNumber,
+            timestamp: new Date().toISOString(),
+            responses: responseData.responses,
+            totalScore: totalScore
+        })
+    });
+
+    // Clear the quiz form and show only the thank you message
+    document.getElementById('quizForm').innerHTML = `
+        <div style="text-align: center; padding: 40px; background: #f8f9fa; border-radius: 8px; margin-top: 20px;">
+            <h2 style="color: #28a745; margin-bottom: 20px;">Thank You for Submitting the Test</h2>
+            <p style="font-size: 1.2em; margin-bottom: 15px;">Your Score: <strong>${totalScore.toFixed(2)}</strong></p>
+            <p style="color: #666;">(Score Range: -60 to +60)</p>
+        </div>
+    `;
+    
+    console.log('Quiz submitted successfully');
+    
+} catch (error) {
+    console.error('Error:', error);
+    alert('There was an error submitting your quiz. Please try again.');
+}
+    });
+
+    // Generate quiz when page loads
+    window.onload = generateQuiz;
+</script>
+</body>
+</html>
